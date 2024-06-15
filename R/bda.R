@@ -341,7 +341,7 @@ bda_t.test <- function(data1, data2, var.equal = FALSE, tipo_test = "bilatero", 
 
   # Calcolo e visualizzazione della varianza pooled (se var.equal = TRUE)
   if (var.equal) {
-    s_p <- sqrt(((n0 - 1) * s0 + (n1 - 1) * s1) / (n0 + n1 - 2)) # Varianza pooled
+    s_p <- ((n0 - 1) * s0 + (n1 - 1) * s1) / (n0 + n1 - 2) # Varianza pooled
     cat("Varianza pooled:", s_p, "\n")
   }
 }
@@ -350,10 +350,10 @@ bda_t.test <- function(data1, data2, var.equal = FALSE, tipo_test = "bilatero", 
 
 bda_t.test_valori_noti <- function(x0, x1, n0, n1, s0, s1, alpha = 0.05, tipo_test = "bilatero") {
   # Calcolo della varianza pooled
-  s_p <- sqrt(((n0 - 1) * s0 + (n1 - 1) * s1) / (n0 + n1 - 2))
+  s_p <- ((n0 - 1) * s0 + (n1 - 1) * s1) / (n0 + n1 - 2)
 
   # Calcolo della statistica t
-  t_stat <- (x1 - x0) / (s_p * sqrt(1/n0 + 1/n1))
+  t_stat <- (x1 - x0) / (sqrt(s_p) * sqrt(1/n0 + 1/n1))
 
   # Calcolo del p-value in base al tipo di test
   if (tipo_test == "bilatero") {
