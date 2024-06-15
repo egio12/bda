@@ -405,3 +405,39 @@ bda_t.test_valori_noti <- function(x0, x1, n0, n1, s0, s1, alpha = 0.05, tipo_te
 }
 
 
+bda_diametro_matrice_adiacenze <- function(adj_matrix) {
+  floyd_warshall <- function(adj_matrix) {
+    n <- nrow(adj_matrix)
+    dist_matrix <- adj_matrix
+
+    for (k in 1:n) {
+      for (i in 1:n) {
+        for (j in 1:n) {
+          dist_matrix[i, j] <- min(dist_matrix[i, j], dist_matrix[i, k] + dist_matrix[k, j])
+        }
+      }
+    }
+
+    return(dist_matrix)
+  }
+
+  # Esempio di matrice di adiacenze
+  cat("Matrice di adiacenze:\n")
+  print(adj_matrix)
+  cat("\n")
+
+  # Sostituisci i 0 con Inf tranne sulla diagonale principale
+  adj_matrix[adj_matrix == 0 & row(adj_matrix) != col(adj_matrix)] <- Inf
+
+  dist_matrix <- floyd_warshall(adj_matrix)
+  diag(dist_matrix) <- 0  # Assicurarsi che la diagonale principale sia 0
+
+  diameter <- max(dist_matrix[dist_matrix != Inf])
+
+  cat("Il diametro della rete è:", diameter, "\n\n")
+}
+
+
+
+
+
