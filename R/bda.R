@@ -163,53 +163,6 @@ bda_dataframes_per_categoria <- function(dati, colonna_categoria, ...) {
   return(dataframes_risultanti)
 }
 
-# Funzione per il T-test con valori medi e varianze note (gruppi 0 e 1)
-bda_t_test <- function(x0, x1, n0, n1, s0, s1, alpha = 0.05 , tipo_test) {
-
-  # Calcolo della varianza pooled
-  s_p <- sqrt(((n0 - 1) * s0 + (n1 - 1) * s1) / (n0 + n1 - 2))
-
-  # Calcolo della statistica t
-  t_stat <- (x1 - x0) / (s_p * sqrt(1/n0 + 1/n1))
-
-  # Calcolo del p-value in base al tipo di test
-  if (tipo_test == "bilatero") {
-    p_value <- 2 * (1 - pt(abs(t_stat), df = n0 + n1 - 2))
-  } else if (tipo_test == "sinistro") {
-    p_value <- pt(t_stat, df = n0 + n1 - 2)
-  } else if (tipo_test == "destro") {
-    p_value <- pt(t_stat, df = n0 + n1 - 2, lower.tail = FALSE)
-  } else {
-    stop("Tipo di test non valido. Scegliere tra 'bilatero', 'sinistro' o 'destro'.")
-  }
-
-  # Calcolo del quantile di riferimento in base al tipo di test
-  if (tipo_test == "bilatero") {
-    quantile_rif <- qt(1 - alpha/2, df = n0 + n1 - 2)
-  } else if (tipo_test == "sinistro") {
-    quantile_rif <- qt(alpha, df = n0 + n1 - 2)
-  } else if (tipo_test == "destro") {
-    quantile_rif <- qt(1 - alpha, df = n0 + n1 - 2)
-  } else {
-    stop("Tipo di test non valido. Scegliere tra 'bilatero', 'sinistro' o 'destro'.")
-  }
-
-  # Decisione statistica
-  if (p_value < alpha) {
-    decisione <- "Rifiuto H0, Accetto H1"
-  } else {
-    decisione <- "Non rifiuto H0"
-  }
-
-  # Output formattato
-  cat("Risultati del T-test (Gruppo 0 vs. Gruppo 1):\n")
-  cat("--------------------------------------------\n")
-  cat("Statistica t:", t_stat, "\n")
-  cat("P-value:", p_value, "\n")
-  cat("Quantile di riferimento (alpha =", alpha, "):", quantile_rif, "\n")
-  cat("Decisione:", decisione, "\n")
-}
-
 bda_valuta_ipotesi <- function(p_value, alpha = 0.05) {
   cat("\n")
   cat("**************************************************\n")
@@ -344,27 +297,42 @@ bda_shapiro.test <- function(data) {
   cat("\n")
 }
 
-bda_t.test <- function(data1, data2, var.equal = FALSE) {
+bda_t.test <- function(data1, data2, var.equal = FALSE, tipo_test = "bilatero", alpha = 0.05) {
   # Calcolo manuale di n0, n1, s0, s1
   n0 <- length(data1)
   n1 <- length(data2)
   s0 <- var(data1)
   s1 <- var(data2)
 
+  # Definisci l'argomento 'alternative' in base a 'tipo_test'
+  alternative <- switch(tipo_test,
+                        "bilatero" = "two.sided",
+                        "sinistro" = "less",
+                        "destro" = "greater",
+                        stop("Tipo di test non valido. Usa 'bilatero', 'sinistro' o 'destro'."))
+
   # Esecuzione del t-test
-  test_result <- t.test(data1, data2, var.equal = var.equal)
+  test_result <- t.test(data1, data2, var.equal = var.equal, alternative = alternative)
 
   # Formattazione del risultato
   cat("\n")
   cat("Risultati del T-Test\n")
   cat("--------------------\n")
   cat("Varianze uguali:", ifelse(var.equal, "Sì", "No"), "\n")
+
+  # Descrizione del tipo di test
+  tipo_test_descrizione <- switch(tipo_test,
+                                  "bilatero" = "m1 ≠ m0",
+                                  "sinistro" = "m1 < m0",
+                                  "destro" = "m1 > m0")
+
+  cat("Tipo di test:", tipo_test_descrizione, "\n")
   cat("Statistica t:", test_result$statistic, "\n")
   cat("Gradi di libertà:", test_result$parameter, "\n")
   cat("P-value:", test_result$p.value, "\n\n")
 
-  # Interpretazione del risultato
-  if (test_result$p.value > 0.05) {
+  # Interpretazione del risultato basata su alpha
+  if (test_result$p.value > alpha) {
     cat("Conclusione: NON c'è evidenza significativa di differenza tra le medie dei due gruppi.\n")
   } else {
     cat("Conclusione: C'è evidenza significativa di differenza tra le medie dei due gruppi.\n")
@@ -373,10 +341,67 @@ bda_t.test <- function(data1, data2, var.equal = FALSE) {
 
   # Calcolo e visualizzazione della varianza pooled (se var.equal = TRUE)
   if (var.equal) {
-    s_p <- sqrt(((n0 - 1) * s0^2 + (n1 - 1) * s1^2) / (n0 + n1 - 2)) # Varianza pooled
+    s_p <- sqrt(((n0 - 1) * s0 + (n1 - 1) * s1) / (n0 + n1 - 2)) # Varianza pooled
     cat("Varianza pooled:", s_p, "\n")
   }
 }
 
+
+
+bda_t.test_valori_noti <- function(x0, x1, n0, n1, s0, s1, alpha = 0.05, tipo_test = "bilatero") {
+  # Calcolo della varianza pooled
+  s_p <- sqrt(((n0 - 1) * s0 + (n1 - 1) * s1) / (n0 + n1 - 2))
+
+  # Calcolo della statistica t
+  t_stat <- (x1 - x0) / (s_p * sqrt(1/n0 + 1/n1))
+
+  # Calcolo del p-value in base al tipo di test
+  if (tipo_test == "bilatero") {
+    p_value <- 2 * (1 - pt(abs(t_stat), df = n0 + n1 - 2))
+  } else if (tipo_test == "sinistro") {
+    p_value <- pt(t_stat, df = n0 + n1 - 2)
+  } else if (tipo_test == "destro") {
+    p_value <- pt(t_stat, df = n0 + n1 - 2, lower.tail = FALSE)
+  } else {
+    stop("Tipo di test non valido. Scegliere tra 'bilatero', 'sinistro' o 'destro'.")
+  }
+
+  # Calcolo del quantile di riferimento in base al tipo di test
+  if (tipo_test == "bilatero") {
+    quantile_rif <- qt(1 - alpha/2, df = n0 + n1 - 2)
+  } else if (tipo_test == "sinistro") {
+    quantile_rif <- qt(alpha, df = n0 + n1 - 2)
+  } else if (tipo_test == "destro") {
+    quantile_rif <- qt(1 - alpha, df = n0 + n1 - 2)
+  } else {
+    stop("Tipo di test non valido. Scegliere tra 'bilatero', 'sinistro' o 'destro'.")
+  }
+
+  # Decisione statistica
+  if (p_value < alpha) {
+    decisione <- "Rifiuto H0, Accetto H1"
+  } else {
+    decisione <- "Non rifiuto H0"
+  }
+
+  # Descrizione del tipo di test
+  tipo_test_descrizione <- switch(tipo_test,
+                                  "bilatero" = "m1 ≠ m0",
+                                  "sinistro" = "m1 < m0",
+                                  "destro" = "m1 > m0")
+
+  # Output formattato
+  cat("\n")
+  cat("Risultati del T-Test (Gruppo 0 vs. Gruppo 1)\n")
+  cat("--------------------------------------------\n")
+  cat("Varianze uguali: Sì\n")
+  cat("Tipo di test:", tipo_test_descrizione, "\n")
+  cat("Statistica t:", t_stat, "\n")
+  cat("Gradi di libertà:", n0 + n1 - 2, "\n")
+  cat("P-value:", p_value, "\n")
+  cat("Quantile di riferimento (alpha =", alpha, "):", quantile_rif, "\n")
+  cat("Varianza pooled:", s_p, "\n")
+  cat("Decisione:", decisione, "\n\n")
+}
 
 
