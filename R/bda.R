@@ -698,7 +698,7 @@ bda_analisi_community <- function(graph, is_directed = TRUE, weights = NA) {
   return(results)
 }
 
-bda_tune_random_forest <- function(formula, data, ntree = 1000, seed=1000) {
+bda_tune_random_forest <- function(formula, data, ntree = 1000, abline_val = NULL, seed=1000) {
   # Numero massimo di variabili (caratteristiche) nel dataset
   num_vars <- ncol(data) - 1 # Escludendo la variabile di risposta
 
@@ -718,11 +718,25 @@ bda_tune_random_forest <- function(formula, data, ntree = 1000, seed=1000) {
     oob_err = oob.err
   )
 
-  # Plotting the results
+  # Plotting the results using matplot
   matplot(1:num_vars, oob.err, pch = 19, type = "b", col = "blue",
           xlab = "Number of Variables (mtry)", ylab = "OOB Error",
           main = "OOB Error vs. mtry")
 
-  return(results)
+  if (!is.null(abline_val)) {
+    abline(h = abline_val, col = "red", lty = 2)
+    first_below_abline <- which(oob.err < abline_val)[1]
+    if (!is.na(first_below_abline)) {
+      legend_text <- paste("Primo mtry sotto l'abline:", first_below_abline)
+      cat("\n", legend_text, "\n")
+    } else {
+      legend_text <- "Nessun mtry sotto l'abline"
+      cat("\n", legend_text, "\n")
+    }
+  } else {
+    legend_text <- NULL
+  }
+
+  return(list(Results = results, Abline_Info = legend_text))
 }
 
