@@ -598,4 +598,94 @@ bda_summary_rete <- function(rete) {
 }
 
 
+#DA SISTEMARE VEDENDO NOTION
+bda_centralita_rete <- function(g, directed = TRUE, normalized = TRUE, mode='all') {
+  # Betweenness centrality
+  betweenness_g <- as.data.frame(betweenness(g, directed = directed, normalized = normalized))
 
+  # Closeness centrality
+  closeness_g <- as.data.frame(closeness(g, mode = mode, normalized = normalized))
+
+  # Eigenvector centrality
+  eigenvector_g <- as.data.frame(eigen_centrality(g, directed = directed, scale = TRUE)$vector)
+
+  # Page Rank
+  page_rank_g <- as.data.frame(page_rank(g, directed = directed)$vector)
+
+  # Authority score
+  authority_score_g <- as.data.frame(authority.score(g, scale = normalized)$vector)
+
+  # Hub score
+  hub_score_g <- as.data.frame(hub.score(g, scale = normalized)$vector)
+
+  # K-core centrality
+  kcore_centralities_g <- as.data.frame(kcoreness(g)$ncore)
+
+  # Average nearest neighbor degree
+  avg_nearest_neighbour_degree_g <- as.data.frame(knn(g)$knn)
+
+  # Clustering coefficient
+  clustering_coefficient_g <- as.data.frame(transitivity(g, isolates = "zero", type = "local"))
+  row.names(clustering_coefficient_g) <- V(g)$name
+
+  # Unione di tutti gli indicatori in una lista
+  indicatori <- list(
+    "Betweenness centrality" = betweenness_g,
+    "Closeness centrality" = closeness_g,
+    "Eigenvector centrality" = eigenvector_g,
+    "Page Rank" = page_rank_g,
+    "Authority score" = authority_score_g,
+    "Hub score" = hub_score_g,
+    "K-core centrality" = kcore_centralities_g,
+    "Average nearest neighbor degree" = avg_nearest_neighbour_degree_g,
+    "Clustering coefficient" = clustering_coefficient_g
+  )
+
+  return(indicatori)
+}
+
+bda_analisi_community <- function(graph, is_directed = TRUE) {
+
+  # Se la rete è diretta e is_directed è TRUE, la trasformiamo in non direzionata
+  if (is_directed && is_directed(graph)) {
+    g_comm <- as.undirected(graph)
+  } else {
+    g_comm <- graph
+  }
+
+  # Greedy Newman
+  c_greedy <- cluster_fast_greedy(g_comm)
+  mod_greedy <- modularity(c_greedy)
+  sizes_greedy <- sizes(c_greedy)
+  num_communities_greedy <- length(sizes_greedy)
+  mean_size_greedy <- mean(sizes_greedy)
+  sd_size_greedy <- sd(sizes_greedy)
+
+  # Louvain
+  c_louvain <- cluster_louvain(g_comm)
+  mod_louvain <- modularity(c_louvain)
+  sizes_louvain <- sizes(c_louvain)
+  num_communities_louvain <- length(sizes_louvain)
+  mean_size_louvain <- mean(sizes_louvain)
+  sd_size_louvain <- sd(sizes_louvain)
+
+  # Leiden
+  c_leiden <- cluster_leiden(g_comm, objective_function='modularity')
+  mod_leiden <- c_leiden$quality
+  sizes_leiden <- sizes(c_leiden)
+  num_communities_leiden <- length(sizes_leiden)
+  mean_size_leiden <- mean(sizes_leiden)
+  sd_size_leiden <- sd(sizes_leiden)
+
+  # Creiamo una tabella di output
+  results <- data.frame(
+    Algorithm = c("Greedy Newman", "Louvain", "Leiden"),
+    Modularity = c(mod_greedy, mod_louvain, mod_leiden),
+    Num_Communities = c(num_communities_greedy, num_communities_louvain, num_communities_leiden),
+    Mean_Community_Size = c(mean_size_greedy, mean_size_louvain, mean_size_leiden),
+    SD_Community_Size = c(sd_size_greedy, sd_size_louvain, sd_size_leiden),
+    stringsAsFactors = FALSE
+  )
+
+  return(results)
+}
