@@ -644,7 +644,7 @@ bda_centralita_rete <- function(g, directed = TRUE, normalized = TRUE, mode='all
   return(indicatori)
 }
 
-bda_analisi_community <- function(graph, is_directed = TRUE) {
+bda_analisi_community <- function(graph, is_directed = TRUE, weights = NA) {
 
   # Se la rete è diretta e is_directed è TRUE, la trasformiamo in non direzionata
   if (is_directed && is_directed(graph)) {
@@ -677,13 +677,21 @@ bda_analisi_community <- function(graph, is_directed = TRUE) {
   mean_size_leiden <- mean(sizes_leiden)
   sd_size_leiden <- sd(sizes_leiden)
 
+  # Girvan-Newman (Edge Betweenness)
+  c_betw <- cluster_edge_betweenness(g_comm, weights = weights)
+  mod_betw <- modularity(c_betw)
+  sizes_betw <- sizes(c_betw)
+  num_communities_betw <- length(sizes_betw)
+  mean_size_betw <- mean(sizes_betw)
+  sd_size_betw <- sd(sizes_betw)
+
   # Creiamo una tabella di output
   results <- data.frame(
-    Algorithm = c("Greedy Newman", "Louvain", "Leiden"),
-    Modularity = c(mod_greedy, mod_louvain, mod_leiden),
-    Num_Communities = c(num_communities_greedy, num_communities_louvain, num_communities_leiden),
-    Mean_Community_Size = c(mean_size_greedy, mean_size_louvain, mean_size_leiden),
-    SD_Community_Size = c(sd_size_greedy, sd_size_louvain, sd_size_leiden),
+    Algorithm = c("Greedy Newman", "Louvain", "Leiden", "Girvan-Newman"),
+    Modularity = c(mod_greedy, mod_louvain, mod_leiden, mod_betw),
+    Num_Communities = c(num_communities_greedy, num_communities_louvain, num_communities_leiden, num_communities_betw),
+    Mean_Community_Size = c(mean_size_greedy, mean_size_louvain, mean_size_leiden, mean_size_betw),
+    SD_Community_Size = c(sd_size_greedy, sd_size_louvain, sd_size_leiden, sd_size_betw),
     stringsAsFactors = FALSE
   )
 
