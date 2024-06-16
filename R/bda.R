@@ -554,31 +554,47 @@ bda_cluster_analysis <- function(dataset, method, distance) {
 
 
 bda_summary_rete <- function(rete) {
-  # Calcolo della densità della rete
-  densita <- graph.density(rete)
+  # Numero di nodi
+  num_nodi <- vcount(g)
 
-  # Calcolo del grado minimo della rete
-  grado_minimo <- min(degree(rete))
-  nodi_grado_minimo <- V(rete)[degree(rete) == grado_minimo]
+  # Numero di link
+  num_link <- ecount(g)
 
-  # Calcolo del grado massimo della rete
-  grado_massimo <- max(degree(rete))
-  nodi_grado_massimo <- V(rete)[degree(rete) == grado_massimo]
+  # Densità della rete
+  densita_rete <- graph.density(g)
 
-  # Numero totale di nodi nella rete
-  numero_nodi <- vcount(rete)
+  # Grado minimo della rete e nodi corrispondenti
+  grado_minimo <- min(degree(g))
+  nodi_grado_minimo <- V(g)[degree(g) == grado_minimo]
 
-  # Restituisci i risultati
-  risultati <- list(
-    densita = densita,
-    grado_minimo = grado_minimo,
-    nodi_grado_minimo = nodi_grado_minimo,
-    grado_massimo = grado_massimo,
-    nodi_grado_massimo = nodi_grado_massimo,
-    numero_nodi = numero_nodi
+  # Grado massimo della rete e nodi corrispondenti
+  grado_massimo <- max(degree(g))
+  nodi_grado_massimo <- V(g)[degree(g) == grado_massimo]
+
+  # Diametro della rete
+  diametro <- diameter(g)
+
+  # Numero di componenti connesse
+  num_componenti_connesse <- length(components(g)$csize)
+
+  # Lunghezza media dei cammini
+  lunghezza_media_cammini <- mean_distance(g)
+
+  # Creazione del riepilogo
+  riepilogo <- list(
+    "Numero di nodi" = num_nodi,
+    "Numero di link" = num_link,
+    "Densità della rete" = densita_rete,
+    "Grado minimo della rete" = grado_minimo,
+    "Nodi con grado minimo" = nodi_grado_minimo,
+    "Grado massimo della rete" = grado_massimo,
+    "Nodi con grado massimo" = nodi_grado_massimo,
+    "Diametro della rete" = diametro,
+    "Numero di componenti connesse" = num_componenti_connesse,
+    "Lunghezza media dei cammini" = lunghezza_media_cammini
   )
 
-  return(risultati)
+  return(riepilogo)
 }
 
 
