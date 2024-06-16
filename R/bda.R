@@ -553,4 +553,33 @@ bda_cluster_analysis <- function(dataset, method, distance) {
 }
 
 
+bda_summary_rete <- function(rete) {
+  # Calcolo della densità della rete
+  densita <- graph.density(rete)
+
+  # Calcolo del grado minimo della rete
+  grado_minimo <- min(degree(rete))
+  nodi_grado_minimo <- V(rete)[degree(rete) == grado_minimo]
+
+  # Calcolo del grado massimo della rete
+  grado_massimo <- max(degree(rete))
+  nodi_grado_massimo <- V(rete)[degree(rete) == grado_massimo]
+
+  # Numero totale di nodi nella rete
+  numero_nodi <- vcount(rete)
+
+  # Restituisci i risultati
+  risultati <- list(
+    densita = densita,
+    grado_minimo = grado_minimo,
+    nodi_grado_minimo = nodi_grado_minimo,
+    grado_massimo = grado_massimo,
+    nodi_grado_massimo = nodi_grado_massimo,
+    numero_nodi = numero_nodi
+  )
+
+  return(risultati)
+}
+
+
 
