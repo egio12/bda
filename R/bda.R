@@ -1,17 +1,5 @@
-# Hello, world!
-#
-# This is an example function named 'hello'
-# which prints 'Hello, world!'.
-#
-# You can learn more about package authoring with RStudio at:
-#
-#   http://r-pkgs.had.co.nz/
-#
-# Some useful keyboard shortcuts for package authoring:
-#
-#   Install Package:           'Cmd + Shift + B'
-#   Check Package:             'Cmd + Shift + E'
-#   Test Package:              'Cmd + Shift + T'
+library(rdrobust)
+library(ggplot2)
 
 bda_anova <- function(...) {
 
@@ -437,7 +425,28 @@ bda_diametro_matrice_adiacenze <- function(adj_matrix) {
   cat("Il diametro della rete è:", diameter, "\n\n")
 }
 
+# Funzione per visualizzare un grafico RDD fuzzy
+#
+# Args:
+#   data: DataFrame contenente i dati.
+#   var_risultato: Nome della colonna da usare come asse y (risultato).
+#   var_assegnazione: Nome della colonna da usare come asse x (assegnazione).
+#   var_trattamento: Nome della colonna da usare come fattore per il colore dei punti (trattamento).
+#   soglia: Valore dell'intercetta verticale (la linea tratteggiata rossa).
+#
+# Esempio:
+#   plot_fuzzy_rdd(db, "produttivita", "liquidita", "corso_soft_skills", 1.1)
+bda_sharp_or_fuzzy <- function(data, var_risultato, var_assegnazione, var_trattamento, soglia) {
+  # Estrazione delle colonne richieste
+  x <- data[[var_assegnazione]]
+  y <- data[[var_risultato]]
+  z <- factor(data[[var_trattamento]])
 
-
-
-
+  # Creazione del plot
+  ggplot(data = data, aes_string(x = var_assegnazione, y = var_trattamento)) +
+    geom_point(aes(colour = z)) +
+    geom_vline(xintercept = soglia, linetype = "dashed", color = "red") +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    labs(title = "Sharp or Fuzzy RDD?")
+}
