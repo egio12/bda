@@ -12,5 +12,14 @@ LazyData: true
 Depends:
   rdrobust,
   ggplot2,
-  cluster
-
+  cluster,
+  igraph,
+  dplyr,
+  RColorBrewer,
+  igraph,
+  reshape2,
+  scales,
+  poweRlaw,
+  GGally,
+  lsa,
+  igraphdata
