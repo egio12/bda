@@ -697,3 +697,32 @@ bda_analisi_community <- function(graph, is_directed = TRUE, weights = NA) {
 
   return(results)
 }
+
+bda_tune_random_forest <- function(formula, data, ntree = 1000, seed=1000) {
+  # Numero massimo di variabili (caratteristiche) nel dataset
+  num_vars <- ncol(data) - 1 # Escludendo la variabile di risposta
+
+  # Array per memorizzare gli errori OOB per ogni valore di mtry
+  oob.err <- rep(0, num_vars)
+
+  # Loop attraverso i possibili valori di mtry
+  for(mtry in 1:num_vars) {
+    set.seed(seed)
+    fit <- randomForest(formula, data = data, mtry = mtry, ntree = ntree)
+    oob.err[mtry] <- fit$mse[ntree]
+  }
+
+  # Creazione della tabella di output
+  results <- data.frame(
+    mtry = 1:num_vars,
+    oob_err = oob.err
+  )
+
+  # Plotting the results
+  matplot(1:num_vars, oob.err, pch = 19, type = "b", col = "blue",
+          xlab = "Number of Variables (mtry)", ylab = "OOB Error",
+          main = "OOB Error vs. mtry")
+
+  return(results)
+}
+
