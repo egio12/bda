@@ -494,3 +494,57 @@ bda_pca_analysis <- function(dataset_num) {
   return(pca)
 }
 
+bda_cluster_analysis <- function(dataset, method, distance) {
+  # Controllo validità degli input
+  valid_methods <- c("complete", "average", "single")
+  valid_distances <- c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski")
+
+  if (!(method %in% valid_methods)) {
+    stop("Metodo non valido. Scegli tra: 'complete', 'average', 'single'.")
+  }
+  if (!(distance %in% valid_distances)) {
+    stop("Distanza non valida. Scegli tra: 'euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'.")
+  }
+
+  # Controllo che il dataset sia una matrice o un data frame con almeno due colonne
+  if (!is.data.frame(dataset) && !is.matrix(dataset)) {
+    stop("Il dataset deve essere un data frame o una matrice.")
+  }
+  if (ncol(dataset) < 2) {
+    stop("Il dataset deve avere almeno due colonne.")
+  }
+
+  # Calcolo la distanza
+  dist_matrix <- dist(dataset, method = distance)
+
+  # Eseguo il clustering gerarchico
+  hclust_result <- hclust(dist_matrix, method = method)
+
+  # Plot del dendrogramma
+  plot(hclust_result, main = paste("Dendrogramma (Metodo:", method, ", Distanza:", distance, ")"),
+       xlab = "", sub = "", cex.main = 1.2)
+
+  # Chiedo all'utente dove tagliare
+  cut_number <- as.numeric(readline(prompt = "Inserisci il numero di cluster in cui tagliare il dendogramma: "))
+
+  # Taglio il dendrogramma
+  clusters <- cutree(hclust_result, cut_number)
+
+  # Calcolo il numero dei cluster e la numerosità dei cluster
+  num_clusters <- cut_number
+  cluster_sizes <- table(clusters)
+
+  # Calcolo la media intracluster usando tapply
+  cluster_means <- sapply(dataset, function(x) tapply(x, clusters, mean))
+
+  # Formattazione output
+  cat("\nRisultati del clustering:\n")
+  cat("-------------------------\n")
+  cat("Numero di cluster:", num_clusters, "\n\n")
+  cat("Numerosità dei cluster:\n")
+  print(cluster_sizes)
+  cat("\nMedia intracluster (ColMeans):\n")
+  print(cluster_means)
+
+  return(list(num_clusters = num_clusters, cluster_sizes = cluster_sizes, cluster_means = cluster_means))
+}
