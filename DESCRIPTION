@@ -22,4 +22,8 @@ Depends:
   poweRlaw,
   GGally,
   lsa,
-  igraphdata
+  igraphdata,
+  tree,
+  ISLR,
+  MASS,
+  randomForest
