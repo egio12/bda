@@ -450,3 +450,47 @@ bda_sharp_or_fuzzy <- function(data, var_risultato, var_assegnazione, var_tratta
     theme(plot.title = element_text(hjust = 0.5)) +
     labs(title = "Sharp or Fuzzy RDD?")
 }
+
+bda_pca_analysis <- function(dataset_num) {
+  # Controllo che il dataset sia numerico
+  if (!all(sapply(dataset_num, is.numeric))) {
+    stop("Il dataset deve contenere solo dati numerici.")
+  }
+
+  # Calcolo la matrice di covarianza
+  s <- cov(dataset_num)
+  print("Matrice di covarianza (prime righe):")
+  print(head(s))
+
+  # Visualizzo il boxplot delle varianze
+  varianze <- diag(s)
+  boxplot(varianze, main = "Boxplot delle varianze")
+
+  # Valuto se conviene standardizzare
+  if (max(varianze) / min(varianze) > 10) {
+    print("Conviene standardizzare i dati poiché le varianze differiscono di molto.")
+    risposta <- readline(prompt = "Vuoi procedere con la standardizzazione? (s/n): ")
+
+    if (tolower(risposta) == 's') {
+      # Standardizzo il dataset
+      dataset_st <- scale(dataset_num)
+      s <- cov(dataset_st)
+      print("Dati standardizzati. Matrice di covarianza (prime righe) dopo la standardizzazione:")
+      print(head(s))
+    } else {
+      dataset_st <- dataset_num
+      print("Non si è proceduto con la standardizzazione.")
+    }
+  } else {
+    dataset_st <- dataset_num
+    print("Non è necessario standardizzare i dati poiché le varianze sono simili.")
+  }
+
+  # Eseguo la PCA
+  pca <- prcomp(dataset_st, scale. = FALSE)
+  print("Risultati della PCA:")
+  print(summary(pca))
+
+  return(pca)
+}
+
