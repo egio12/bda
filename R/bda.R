@@ -739,7 +739,6 @@ bda_tune_random_forest <- function(formula, data, ntree = 1000, abline_val = NUL
   return(list(Results = results, Abline_Info = legend_text))
 }
 
-# Funzione per creare il DAG e trovare i set di variabili da controllare
 bda_dag_var_da_controllare <- function(dag) {
   # Calcolo dei set di variabili da controllare
   sets <- adjustmentSets(dag)
@@ -750,16 +749,43 @@ bda_dag_var_da_controllare <- function(dag) {
     cat("Set", i, ":", paste(sets[[i]], collapse = ", "), "\n")
   }
 
+  # Output dei Collider
+  #Estraggo i collider
+  colliders = node_collider(dag)$data[node_collider(dag)$data$colliders == "Collider", "name"]$name
+  #Stampo i collider se ci sono
+  if(length(colliders) > 0){
+    cat("\nCollider presenti nel DAG:\n")
+    for (i in 1:length(colliders)) {
+      cat(colliders[i], "\n")
+    }
+  } else {
+    cat("\nNon sono presenti collider nel DAG.\n")
+  }
+
+  # Estrai nomi nodo trattamento
+  trattamenti <- exposures(dag)
+  # Estrai nomi nodo outcome
+  outcomes <- outcomes(dag)
+  # Estrai nomi nodi latenti
+  latents <- latents(dag)
+
+
+
   # Plot del DAG
   p <- ggdag(dag) +
     theme_dag() +
-    geom_dag_point(aes(color = ifelse(name == "t", "Trattamento",
-                                      ifelse(name == "y", "Outcome",
-                                             ifelse(name == "x5", "Variabile Non osservabile", "Altre variabili"))))) +
+
+    #Coloro i nodi trattamento (trattamenti) di verde, outcomes di rosso e latents di blu                                  ifelse(name == "x5", "Variabile Non osservabile", "Altre variabili"))))) +
+
+    geom_dag_point(aes(color = ifelse(name %in% trattamenti, "Trattamento",
+                                      ifelse(name %in% outcomes, "Outcome",
+                                             ifelse(name %in% latents, "Variabile Non osservabile", "Altre variabili"))))) +
+
     scale_color_manual(values = c("Trattamento" = "green",
                                   "Outcome" = "red",
                                   "Variabile Non osservabile" = "blue",
                                   "Altre variabili" = "black")) +
+
     geom_dag_text(color = "white") +
     theme(panel.background = element_rect(fill = "white", color = "white"),
           plot.background = element_rect(fill = "white", color = "white"),
@@ -772,3 +798,4 @@ bda_dag_var_da_controllare <- function(dag) {
 
   print(p)
 }
+
