@@ -749,19 +749,6 @@ bda_dag_var_da_controllare <- function(dag) {
     cat("Set", i, ":", paste(sets[[i]], collapse = ", "), "\n")
   }
 
-  # Output dei Collider
-  #Estraggo i collider
-  colliders = node_collider(dag)$data[node_collider(dag)$data$colliders == "Collider", "name"]$name
-  #Stampo i collider se ci sono
-  if(length(colliders) > 0){
-    cat("\nCollider presenti nel DAG:\n")
-    for (i in 1:length(colliders)) {
-      cat(colliders[i], "\n")
-    }
-  } else {
-    cat("\nNon sono presenti collider nel DAG.\n")
-  }
-
   # Estrai nomi nodo trattamento
   trattamenti <- exposures(dag)
   # Estrai nomi nodo outcome
