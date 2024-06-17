@@ -739,3 +739,36 @@ bda_tune_random_forest <- function(formula, data, ntree = 1000, abline_val = NUL
   return(list(Results = results, Abline_Info = legend_text))
 }
 
+# Funzione per creare il DAG e trovare i set di variabili da controllare
+bda_dag_var_da_controllare <- function(dag) {
+  # Calcolo dei set di variabili da controllare
+  sets <- adjustmentSets(dag)
+
+  # Output dei set di variabili da controllare
+  cat("Set di variabili da controllare (Controllare per uno di questi set chiuderebbe tutti i BDP aperti):\n")
+  for (i in seq_along(sets)) {
+    cat("Set", i, ":", paste(sets[[i]], collapse = ", "), "\n")
+  }
+
+  # Plot del DAG
+  p <- ggdag(dag) +
+    theme_dag() +
+    geom_dag_point(aes(color = ifelse(name == "t", "Trattamento",
+                                      ifelse(name == "y", "Outcome",
+                                             ifelse(name == "x5", "Variabile Non osservabile", "Altre variabili"))))) +
+    scale_color_manual(values = c("Trattamento" = "green",
+                                  "Outcome" = "red",
+                                  "Variabile Non osservabile" = "blue",
+                                  "Altre variabili" = "black")) +
+    geom_dag_text(color = "white") +
+    theme(panel.background = element_rect(fill = "white", color = "white"),
+          plot.background = element_rect(fill = "white", color = "white"),
+          legend.background = element_rect(fill = "white", color = "white"),
+          legend.text = element_text(color = "black"),
+          legend.title = element_text(color = "black"),
+          plot.title = element_text(color = "black"),
+          plot.caption = element_text(color = "black")) +
+    labs(color = "Legenda")
+
+  print(p)
+}
