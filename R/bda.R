@@ -385,7 +385,6 @@ bda_t.test_valori_noti <- function(x0, x1, n0, n1, s0, s1, alpha = 0.05, tipo_te
   cat("\n")
   cat("Risultati del T-Test (Gruppo 0 vs. Gruppo 1)\n")
   cat("--------------------------------------------\n")
-  cat("Varianze uguali: Sì\n")
   cat("H1:", tipo_test_descrizione, "\n")
   cat("Statistica t:", t_stat, "\n")
   cat("Gradi di libertà:", n0 + n1 - 2, "\n")
