@@ -317,7 +317,7 @@ bda_t.test <- function(data1, data2, var.equal = FALSE, tipo_test = "bilatero", 
                                   "sinistro" = "m1 < m0",
                                   "destro" = "m1 > m0")
 
-  cat("Tipo di test:", tipo_test_descrizione, "\n")
+  cat("H1:", tipo_test_descrizione, "\n")
   cat("Statistica t:", test_result$statistic, "\n")
   cat("Gradi di libertà:", test_result$parameter, "\n")
   cat("P-value:", test_result$p.value, "\n\n")
@@ -386,7 +386,7 @@ bda_t.test_valori_noti <- function(x0, x1, n0, n1, s0, s1, alpha = 0.05, tipo_te
   cat("Risultati del T-Test (Gruppo 0 vs. Gruppo 1)\n")
   cat("--------------------------------------------\n")
   cat("Varianze uguali: Sì\n")
-  cat("Tipo di test:", tipo_test_descrizione, "\n")
+  cat("H1:", tipo_test_descrizione, "\n")
   cat("Statistica t:", t_stat, "\n")
   cat("Gradi di libertà:", n0 + n1 - 2, "\n")
   cat("P-value:", p_value, "\n")
