@@ -788,3 +788,45 @@ bda_dag_var_da_controllare <- function(dag) {
   print(p)
 }
 
+# Funzione per la classificazione e la valutazione del modello
+bda_classificazione_da_modello_reg_logistica <- function(modello, dati, var_risposta, soglia=0.5) {
+  # Calcolare i valori fittati di probabilità
+  pred <- predict(modello, dati, type='response')
+
+  # Classificazione sulla base della soglia
+  pred_class <- ifelse(pred > soglia, 1, 0)
+
+  # Tabella di misclassificazione
+  misclass_table <- table(pred_class, dati[[var_risposta]])
+  misclass_matrix <- as.matrix(misclass_table)
+
+  # Calcolo delle metriche
+  TP <- misclass_matrix[2, 2]
+  FN <- misclass_matrix[1, 2]
+  TN <- misclass_matrix[1, 1]
+  FP <- misclass_matrix[2, 1]
+
+  sensitivity <- TP / (TP + FN)
+  specificity <- TN / (TN + FP)
+  fpr <- 1 - specificity
+  accuracy <- (TP + TN) / sum(misclass_matrix)
+  aper <- 1 - accuracy
+
+  # Disegnare la curva ROC
+  PRROC_obj <- roc.curve(scores.class0 = pred[dati[[var_risposta]] == 1],
+                         scores.class1 = pred[dati[[var_risposta]] == 0],
+                         curve=TRUE)
+  plot(PRROC_obj)
+
+  # Restituzione dei risultati come lista
+  risultati <- list(
+    misclass_table = misclass_table,
+    sensitivity = sensitivity,
+    specificity = specificity,
+    fpr = fpr,
+    accuracy = accuracy,
+    aper = aper
+  )
+
+  return(risultati)
+}

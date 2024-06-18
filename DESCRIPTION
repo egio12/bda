@@ -30,4 +30,6 @@ Depends:
   dagitty,
   ivreg,
   ggdag,
-  glmnet
+  glmnet,
+  pROC,
+  PRROC
