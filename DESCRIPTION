@@ -32,4 +32,5 @@ Depends:
   ggdag,
   glmnet,
   pROC,
-  PRROC
+  PRROC,
+  MatchIt
