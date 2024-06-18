@@ -29,4 +29,5 @@ Depends:
   randomForest,
   dagitty,
   ivreg,
-  ggdag
+  ggdag,
+  glmnet
