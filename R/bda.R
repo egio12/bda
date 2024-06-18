@@ -288,8 +288,10 @@ bda_shapiro.test <- function(data) {
   cat("\n")
 }
 
-bda_t.test <- function(data1, data2, var.equal = FALSE, tipo_test = "bilatero", alpha = 0.05) {
+bda_t.test <- function(data_gruppo_0, data_gruppo_1, var.equal = FALSE, tipo_test = "bilatero", alpha = 0.05) {
   # Calcolo manuale di n0, n1, s0, s1
+  data1 <- data_gruppo_0
+  data2 <- data_gruppo_1
   n0 <- length(data1)
   n1 <- length(data2)
   s0 <- var(data1)
