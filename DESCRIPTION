@@ -33,4 +33,8 @@ Depends:
   glmnet,
   pROC,
   PRROC,
-  MatchIt
+  MatchIt,
+  car,
+  pls,
+  rdd,
+  rgl
