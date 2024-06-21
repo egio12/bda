@@ -840,3 +840,41 @@ bda_classificazione_da_modello_reg_logistica <- function(modello, dati, var_risp
 
   return(risultati)
 }
+
+bda_summary_missclass_table <- function(missclass_table) {
+  # Estrazione dei valori dalla matrice di confusione
+  TP <- missclass_table[2, 2]
+  FN <- missclass_table[1, 2]
+  TN <- missclass_table[1, 1]
+  FP <- missclass_table[2, 1]
+
+  # Calcolo degli indicatori
+  sensitivity <- TP / (TP + FN)
+  specificity <- TN / (TN + FP)
+  accuracy <- (TP + TN) / (TP + TN + FP + FN)
+  precision <- TP / (TP + FP)
+  missclassification_error <- 1 - accuracy  # Missclassification Error
+
+  # Output formattato (con colori e spaziatura)
+  cat("\n\n")
+  cat("\033[1;34m*********************************************\033[0m\n")
+  cat("\033[1;34m*    Indicatori di Performance del Modello    *\033[0m\n")
+  cat("\033[1;34m*********************************************\033[0m\n\n")
+
+  cat(" Sensitivity (True Positive Rate):", sensitivity, "\n")
+  cat("  Formula: TP / (TP + FN)\n\n")
+
+  cat(" Specificity (True Negative Rate):", specificity, "\n")
+  cat("  Formula: TN / (TN + FP)\n\n")
+
+  cat(" Accuracy:", accuracy, "\n")
+  cat("  Formula: (TP + TN) / (TP + TN + FP + FN)\n\n")
+
+  cat(" Precision (Positive Predictive Value):", precision, "\n")
+  cat("  Formula: TP / (TP + FP)\n\n")
+
+  cat(" Missclassification Error:", missclassification_error, "\n")
+  cat("  Formula: 1 - accuracy\n\n")
+
+  cat("\033[1;34m*********************************************\033[0m\n")
+}
