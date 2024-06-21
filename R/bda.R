@@ -878,3 +878,43 @@ bda_summary_missclass_table <- function(missclass_table) {
 
   cat("\033[1;34m*********************************************\033[0m\n")
 }
+
+bda_cv.glmnet <- function(x, y, alpha = 1, nfolds = 10, lambda, seed = 1) {
+  # Impostazione del seed per la riproducibilità
+  set.seed(seed)
+
+  # Esecuzione della cross-validazione per la scelta del miglior lambda
+  cv.model <- cv.glmnet(x, y, alpha = alpha, nfolds = nfolds, lambda=lambda)
+
+  # Estrazione del miglior lambda
+  bestlam <- cv.model$lambda.min
+  indbest <- which(cv.model$lambda == bestlam)
+
+  # Estrazione del lambda più regolarizzato
+  reglam <- cv.model$lambda.1se
+  indreg <- which(cv.model$lambda == reglam)
+
+  # Estrazione delle stime degli errori di cross-validazione
+  bestlam_cv_error <- cv.model$cvm[indbest]
+  reglam_cv_error <- cv.model$cvm[indreg]
+
+  # Creazione di una lista con i risultati
+  results <- list(
+    "Valore di lambda corrispondente alla stima minima di MSE" = bestlam,
+    "Lambda che produce il modello più regolarizzato" = reglam,
+    "Stima dell'errore in cross-validazione in corrispondenza del bestlam" = bestlam_cv_error,
+    "Stima dell'errore in cross-validazione in corrispondenza del reglam" = reglam_cv_error
+  )
+
+  # Formattazione e stampa dei risultati in modo ordinato
+  cat("\nRisultati della Cross-Validazione:\n")
+  cat("================================\n")
+  cat(sprintf("Valore di lambda corrispondente alla stima minima di MSE: %.5f\n", results[[1]]))
+  cat(sprintf("Lambda che produce il modello più regolarizzato: %.5f\n", results[[2]]))
+  cat(sprintf("Stima dell'errore in cross-validazione in corrispondenza del bestlam: %.5f\n", results[[3]]))
+  cat(sprintf("Stima dell'errore in cross-validazione in corrispondenza del reglam: %.5f\n", results[[4]]))
+
+  # Plot del modello di cross-validazione
+  plot(cv.model)
+}
+
