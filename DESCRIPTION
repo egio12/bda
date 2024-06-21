@@ -37,4 +37,5 @@ Depends:
   car,
   pls,
   rdd,
-  rgl
+  rgl,
+  randomForest
