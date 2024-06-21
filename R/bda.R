@@ -556,7 +556,7 @@ bda_cluster_analysis <- function(dataset, method, distance) {
   cat("Numero di cluster:", num_clusters, "\n\n")
   cat("Numerosità dei cluster:\n")
   print(cluster_sizes)
-  cat("\nMedia intracluster (ColMeans):\n")
+  cat("\nMedia intracluster - ColMeans (Centroidi):\n")
   print(cluster_means)
 
   return(list(num_clusters = num_clusters, cluster_sizes = cluster_sizes, cluster_means = cluster_means))
