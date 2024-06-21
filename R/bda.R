@@ -528,14 +528,23 @@ bda_cluster_analysis <- function(dataset, method, distance) {
   plot(hclust_result, main = paste("Dendrogramma (Metodo:", method, ", Distanza:", distance, ")"),
        xlab = "", sub = "", cex.main = 1.2)
 
-  # Chiedo all'utente dove tagliare
-  cut_number <- as.numeric(readline(prompt = "Inserisci il numero di cluster in cui tagliare il dendogramma: "))
+  # Chiedo all'utente come vuole tagliare il dendrogramma
+  cut_type <- readline(prompt = "Vuoi tagliare il dendrogramma per numero di cluster (n) o ad una determinata altezza (h)? ")
 
-  # Taglio il dendrogramma
-  clusters <- cutree(hclust_result, cut_number)
+  # Eseguo il taglio in base alla scelta dell'utente
+  if (cut_type == "n") {
+    cut_number <- as.numeric(readline(prompt = "Inserisci il numero di cluster in cui tagliare il dendrogramma: "))
+    clusters <- cutree(hclust_result, cut_number)
+    num_clusters <- cut_number
+  } else if (cut_type == "h") {
+    cut_height <- as.numeric(readline(prompt = "Inserisci l'altezza a cui tagliare il dendrogramma: "))
+    clusters <- cutree(hclust_result, h = cut_height)
+    num_clusters <- length(unique(clusters))
+  } else {
+    stop("Scelta non valida. Inserisci 'n' per numero di cluster o 'h' per altezza.")
+  }
 
-  # Calcolo il numero dei cluster e la numerosità dei cluster
-  num_clusters <- cut_number
+  # Calcolo la numerosità dei cluster
   cluster_sizes <- table(clusters)
 
   # Calcolo la media intracluster usando tapply
@@ -552,6 +561,7 @@ bda_cluster_analysis <- function(dataset, method, distance) {
 
   return(list(num_clusters = num_clusters, cluster_sizes = cluster_sizes, cluster_means = cluster_means))
 }
+
 
 
 bda_summary_rete <- function(rete) {
