@@ -838,6 +838,17 @@ bda_classificazione_da_modello_reg_logistica <- function(modello, dati, var_risp
     aper = aper
   )
 
+  cat("\n\n")
+  cat("\033[1;34m*********************************************\033[0m\n")
+  cat("\033[1;34m*    Indicatori di Performance del Modello    *\033[0m\n")
+  cat("\033[1;34m*********************************************\033[0m\n\n")
+  cat(" Sensitivity (True Positive Rate):", sensitivity, "\n")
+  cat(" Specificity (True Negative Rate):", specificity, "\n")
+  cat(" FPR:", fpr, "\n")
+  cat(" Accuracy:", accuracy, "\n")
+  cat(" APER:", aper, "\n")
+  cat("\033[1;34m*********************************************\033[0m\n")
+
   return(risultati)
 }
 
