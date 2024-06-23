@@ -576,11 +576,16 @@ bda_summary_rete <- function(rete) {
 
   # Grado minimo della rete e nodi corrispondenti
   grado_minimo <- min(degree(g))
-  nodi_grado_minimo <- V(g)[degree(g) == grado_minimo]
+  numero_nodi_grado_minimo <- sum(degree(g)==grado_minimo)
+  nodi_grado_minimo <- which(degree(g)==grado_minimo)
 
   # Grado massimo della rete e nodi corrispondenti
   grado_massimo <- max(degree(g))
-  nodi_grado_massimo <- V(g)[degree(g) == grado_massimo]
+  numero_nodi_grado_massimo <- sum(degree(g)==grado_massimo)
+  nodi_grado_massimo <- which(degree(g)==grado_massimo)
+
+  #La rete è connessa
+  is_connected <- is.connected(g)
 
   # Diametro della rete
   diametro <- diameter(g)
